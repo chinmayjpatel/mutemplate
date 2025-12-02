@@ -1105,16 +1105,369 @@
             border: 1px solid #888;
             color: #ddd;
         }
+
+        /* ===================== */
+        /* OVERLAY & MODALS      */
+        /* ===================== */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+        }
+
+        .overlay.hidden {
+            display: none;
+        }
+
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 101;
+            background: linear-gradient(180deg, rgba(20, 0, 50, 0.98), rgba(10, 0, 30, 0.98));
+            border: 3px solid #ff00ff;
+            border-radius: 20px;
+            padding: 40px;
+            min-width: 400px;
+            max-width: 500px;
+            box-shadow: 0 0 60px rgba(255, 0, 255, 0.5), inset 0 0 30px rgba(0, 255, 255, 0.1);
+        }
+
+        .modal.hidden {
+            display: none;
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-header h1 {
+            font-size: 28px;
+            color: #00ffff;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+            margin-bottom: 10px;
+        }
+
+        .modal-header p {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .modal-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            color: #888;
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            border-color: #00ffff;
+            color: #00ffff;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
+            border-color: #ff00ff;
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .auth-form.hidden {
+            display: none;
+        }
+
+        .auth-form label {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .auth-form label span {
+            color: #888;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .auth-form input {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            color: #00ffff;
+            font-family: inherit;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .auth-form input:focus {
+            outline: none;
+            border-color: #ff00ff;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+        }
+
+        .auth-form input::placeholder {
+            color: #555;
+        }
+
+        .primary-btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #ff00ff, #00ffff);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+
+        .primary-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 0 40px rgba(255, 0, 255, 0.8);
+        }
+
+        .primary-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .form-hint {
+            text-align: center;
+            font-size: 13px;
+            color: #888;
+            min-height: 20px;
+            margin-top: 15px;
+        }
+
+        .form-hint[data-variant="error"] {
+            color: #ff4444;
+        }
+
+        .form-hint[data-variant="success"] {
+            color: #00ff88;
+        }
+
+        .form-hint[data-variant="info"] {
+            color: #00ffff;
+        }
+
+        /* Character List */
+        .character-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 25px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .character-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+            color: inherit;
+        }
+
+        .character-row:hover {
+            border-color: #ff00ff;
+            background: rgba(255, 0, 255, 0.1);
+        }
+
+        .character-row.active {
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.15);
+        }
+
+        .character-name {
+            font-size: 18px;
+            color: #00ffff;
+            font-weight: bold;
+        }
+
+        .character-meta {
+            font-size: 11px;
+            color: #666;
+            display: block;
+            margin-top: 4px;
+        }
+
+        .character-play {
+            color: #ff00ff;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Connection Status */
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .connection-status.online {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+            color: #00ff88;
+        }
+
+        .connection-status.offline {
+            background: rgba(255, 68, 68, 0.2);
+            border: 1px solid #ff4444;
+            color: #ff4444;
+        }
+
+        .connection-status.connecting {
+            background: rgba(255, 170, 0, 0.2);
+            border: 1px solid #ffaa00;
+            color: #ffaa00;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.5; }
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 2px solid #ff4444;
+            border-radius: 8px;
+            color: #ff4444;
+            font-family: inherit;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 68, 68, 0.2);
+        }
     </style>
 </head>
 <body>
+    <!-- ===================== -->
+    <!-- OVERLAY & MODALS      -->
+    <!-- ===================== -->
+    <div id="overlay" class="overlay hidden"></div>
+
+    <!-- Auth Modal (Login/Register) -->
+    <section id="authModal" class="modal hidden" role="dialog" aria-modal="true">
+        <div class="modal-body">
+            <header class="modal-header">
+                <h1 id="authTitle">⚡ TERRA MUD ⚡</h1>
+                <p>Sign in or create an account to explore the galaxy</p>
+            </header>
+            <div class="modal-tabs" role="tablist">
+                <button type="button" class="tab-btn active" data-auth-tab="login">Log in</button>
+                <button type="button" class="tab-btn" data-auth-tab="register">Register</button>
+            </div>
+            <form id="loginForm" class="auth-form" data-auth-form="login">
+                <label>
+                    <span>Email</span>
+                    <input name="email" type="email" autocomplete="email" required placeholder="explorer@terra.space">
+                </label>
+                <label>
+                    <span>Password</span>
+                    <input name="password" type="password" autocomplete="current-password" required placeholder="••••••••">
+                </label>
+                <button type="submit" class="primary-btn">Log in</button>
+            </form>
+            <form id="registerForm" class="auth-form hidden" data-auth-form="register">
+                <label>
+                    <span>Email</span>
+                    <input name="email" type="email" autocomplete="email" required placeholder="explorer@terra.space">
+                </label>
+                <label>
+                    <span>Password</span>
+                    <input name="password" type="password" autocomplete="new-password" required placeholder="••••••••">
+                </label>
+                <button type="submit" class="primary-btn">Create account</button>
+            </form>
+            <p class="form-hint" id="authHint"></p>
+        </div>
+    </section>
+
+    <!-- Character Selection Modal -->
+    <section id="characterModal" class="modal hidden" role="dialog" aria-modal="true">
+        <div class="modal-body">
+            <header class="modal-header">
+                <h1>Choose Your Pilot</h1>
+                <p>Select an existing character or create a new one</p>
+            </header>
+            <div class="character-list" role="list" id="characterList"></div>
+            <p class="form-hint" id="characterHint"></p>
+            <form id="characterForm" class="auth-form">
+                <label>
+                    <span>Character name</span>
+                    <input name="name" placeholder="E.g. StarRunner" minlength="3" maxlength="24" required>
+                </label>
+                <button type="submit" class="primary-btn">Create &amp; Play</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Character Row Template -->
+    <template id="characterRowTemplate">
+        <button type="button" class="character-row" data-character-id="">
+            <div>
+                <span class="character-name"></span>
+                <span class="character-meta"></span>
+            </div>
+            <span class="character-play">▶ PLAY</span>
+        </button>
+    </template>
+
     <div class="space-bg">
         <div class="stars" id="stars"></div>
     </div>
     <div class="game-container">
         <div class="header">
             <div class="player-info">
-                <div class="player-avatar">🧑</div>
+                <div class="player-avatar">🚀</div>
                 <div class="stat">
                     <div class="stat-label">Health</div>
                     <div class="hp-bar-container">
@@ -1137,9 +1490,17 @@
                 </div>
 
                 <div class="stat">
+                    <div class="stat-label">Pilot</div>
+                    <div class="stat-value" id="playerName">---</div>
+                </div>
+                <div class="stat">
                     <div class="stat-label">Location</div>
                     <div class="stat-value" id="currentLocation">Terra</div>
                 </div>
+            </div>
+            <div class="header-controls" style="display: flex; gap: 15px; align-items: center;">
+                <span id="connectionStatus" class="connection-status offline">Offline</span>
+                <button id="logoutBtn" class="logout-btn" style="display: none;">Logout</button>
             </div>
         </div>
         <div class="main-content">
@@ -1240,7 +1601,276 @@
         </div>
     </div>
     
-    <script>
+    <script type="module">
+        // =====================
+        // AUTH & CONNECTION
+        // =====================
+        import { ApiClient } from './js/api.js';
+        import { EventSwitchboard, CharacterEventStream } from './js/events.js';
+
+        const api = new ApiClient("");
+        const switchboard = new EventSwitchboard();
+
+        const authState = {
+            characters: [],
+            activeCharacter: null,
+            stream: null,
+        };
+
+        // DOM Elements for auth
+        const authDom = {
+            overlay: document.getElementById('overlay'),
+            authModal: document.getElementById('authModal'),
+            characterModal: document.getElementById('characterModal'),
+            loginForm: document.getElementById('loginForm'),
+            registerForm: document.getElementById('registerForm'),
+            authTabs: document.querySelectorAll('[data-auth-tab]'),
+            authHint: document.getElementById('authHint'),
+            characterHint: document.getElementById('characterHint'),
+            characterList: document.getElementById('characterList'),
+            characterForm: document.getElementById('characterForm'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            connectionStatus: document.getElementById('connectionStatus'),
+            gameContainer: document.querySelector('.game-container'),
+        };
+
+        // Modal helpers
+        function showModal(modal) {
+            modal.classList.remove('hidden');
+            authDom.overlay.classList.remove('hidden');
+        }
+
+        function hideModal(modal) {
+            modal.classList.add('hidden');
+            authDom.overlay.classList.add('hidden');
+        }
+
+        function setHint(element, message, variant = 'info') {
+            element.textContent = message ?? '';
+            element.dataset.variant = variant;
+        }
+
+        function lockForm(form, locked) {
+            Array.from(form.elements).forEach(el => el.disabled = locked);
+        }
+
+        function setConnectionState(state) {
+            const el = authDom.connectionStatus;
+            el.classList.remove('online', 'offline', 'connecting');
+            el.classList.add(state);
+            el.textContent = state.charAt(0).toUpperCase() + state.slice(1);
+        }
+
+        function renderCharacterList(characters, activeId) {
+            const target = authDom.characterList;
+            target.innerHTML = '';
+            if (!characters.length) {
+                target.innerHTML = '<p class="form-hint">No characters yet. Create one below.</p>';
+                return;
+            }
+            const template = document.getElementById('characterRowTemplate');
+            characters.forEach(character => {
+                const node = template.content.firstElementChild.cloneNode(true);
+                node.dataset.characterId = character.id;
+                node.querySelector('.character-name').textContent = character.name;
+                node.querySelector('.character-meta').textContent = character.created_at
+                    ? new Date(character.created_at).toLocaleString()
+                    : 'Ready to play';
+                if (character.id === activeId) node.classList.add('active');
+                target.appendChild(node);
+            });
+        }
+
+        // Wire up auth tabs
+        authDom.authTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                authDom.authTabs.forEach(btn => btn.classList.toggle('active', btn === tab));
+                const mode = tab.dataset.authTab;
+                authDom.loginForm.classList.toggle('hidden', mode !== 'login');
+                authDom.registerForm.classList.toggle('hidden', mode !== 'register');
+            });
+        });
+
+        // Wire up login/register forms
+        [authDom.loginForm, authDom.registerForm].forEach(form => {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const mode = form.dataset.authForm;
+                const formData = new FormData(form);
+                const email = String(formData.get('email')).trim();
+                const password = String(formData.get('password'));
+
+                if (!email || !password) {
+                    setHint(authDom.authHint, 'Email and password are required.', 'error');
+                    return;
+                }
+
+                lockForm(form, true);
+                setHint(authDom.authHint, mode === 'login' ? 'Signing in...' : 'Creating account...', 'info');
+
+                try {
+                    if (mode === 'login') {
+                        await api.login(email, password);
+                    } else {
+                        await api.register(email, password);
+                    }
+                    form.reset();
+                    await handleAuthenticated();
+                } catch (error) {
+                    setHint(authDom.authHint, error.message, 'error');
+                } finally {
+                    lockForm(form, false);
+                }
+            });
+        });
+
+        // Wire up character selection
+        authDom.characterList.addEventListener('click', (e) => {
+            const button = e.target.closest('[data-character-id]');
+            if (!button) return;
+            const characterId = button.dataset.characterId;
+            const character = authState.characters.find(c => c.id === characterId);
+            if (character) activateCharacter(character);
+        });
+
+        // Wire up character creation
+        authDom.characterForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = String(new FormData(e.currentTarget).get('name')).trim();
+            if (!name) {
+                setHint(authDom.characterHint, 'Name is required.', 'error');
+                return;
+            }
+
+            lockForm(authDom.characterForm, true);
+            setHint(authDom.characterHint, 'Creating character...', 'info');
+
+            try {
+                const created = await api.createCharacter(name);
+                authState.characters = [...authState.characters, created];
+                renderCharacterList(authState.characters, created.id);
+                setHint(authDom.characterHint, `Created ${created.name}!`, 'success');
+                authDom.characterForm.reset();
+                await activateCharacter(created);
+            } catch (error) {
+                setHint(authDom.characterHint, error.message, 'error');
+            } finally {
+                lockForm(authDom.characterForm, false);
+            }
+        });
+
+        // Wire up logout
+        authDom.logoutBtn.addEventListener('click', () => {
+            api.clearTokens();
+            authState.activeCharacter = null;
+            authState.stream?.stop();
+            authState.stream = null;
+            authState.characters = [];
+            authDom.logoutBtn.style.display = 'none';
+            authDom.gameContainer.classList.add('hidden');
+            setConnectionState('offline');
+            addMessage('Signed out.', 'system');
+            showModal(authDom.authModal);
+            setHint(authDom.authHint, 'Session ended. Please sign in again.', 'info');
+        });
+
+        async function handleAuthenticated() {
+            authDom.logoutBtn.style.display = 'block';
+            hideModal(authDom.authModal);
+            await loadCharacters();
+            showModal(authDom.characterModal);
+        }
+
+        async function loadCharacters() {
+            setHint(authDom.characterHint, 'Loading characters...', 'info');
+            try {
+                authState.characters = await api.getCharacters();
+                renderCharacterList(authState.characters, authState.activeCharacter?.id ?? null);
+                if (!authState.characters.length) {
+                    setHint(authDom.characterHint, 'Create your first character to begin.', 'info');
+                } else {
+                    setHint(authDom.characterHint, 'Choose a character or create a new one.', 'info');
+                }
+            } catch (error) {
+                setHint(authDom.characterHint, error.message, 'error');
+            }
+        }
+
+        async function activateCharacter(character) {
+            authState.activeCharacter = character;
+            renderCharacterList(authState.characters, character.id);
+            hideModal(authDom.characterModal);
+
+            // Show game UI
+            authDom.gameContainer.classList.remove('hidden');
+
+            // Update player name display
+            document.getElementById('playerName').textContent = character.name;
+
+            addMessage(`Now playing as ${character.name}.`, 'system');
+
+            // Connect event stream
+            connectEventStream();
+
+            // Initialize game (call the original init function)
+            await init();
+        }
+
+        function connectEventStream() {
+            authState.stream?.stop();
+            if (!authState.activeCharacter) return;
+
+            const url = `/characters/${authState.activeCharacter.id}/events`;
+            authState.stream = new CharacterEventStream({
+                url,
+                tokenProvider: () => api.accessToken,
+                dispatcher: switchboard,
+                onStatus: handleStreamStatus,
+            });
+            authState.stream.start();
+        }
+
+        function handleStreamStatus(status, error) {
+            if (status === 'open') {
+                setConnectionState('online');
+            } else if (status === 'connecting') {
+                setConnectionState('connecting');
+            } else if (status === 'error') {
+                setConnectionState('connecting');
+                if (error) addMessage(`Connection error: ${error.message}`, 'error');
+            } else if (status === 'closed' || status === 'offline') {
+                setConnectionState(authState.activeCharacter ? 'connecting' : 'offline');
+            }
+        }
+
+        // Register event handlers for server events
+        switchboard.on('Text', ({ payload }) => {
+            if (payload?.message) addMessage(payload.message, 'system');
+        });
+
+        switchboard.on('Line', ({ payload }) => {
+            if (payload?.message) addMessage(payload.message, 'system');
+        });
+
+        switchboard.on('SayMessage', ({ payload }) => {
+            if (payload?.entity_name && payload?.message) {
+                addMessage(`${payload.entity_name} says, "${payload.message}"`, 'chat');
+            }
+        });
+
+        // Auth initialization
+        function initAuth() {
+            // Hide game container initially
+            authDom.gameContainer.classList.add('hidden');
+
+            if (api.hasTokens()) {
+                handleAuthenticated();
+            } else {
+                showModal(authDom.authModal);
+                setHint(authDom.authHint, 'Sign in to explore the galaxy.', 'info');
+            }
+        }
+
         // =====================
         // CONFIG + GLOBAL STATE
         // =====================
@@ -2255,5 +2885,6 @@
         // =====================
         // START
         // =====================
-        init();
+        // Call initAuth() instead of init() - it will call init() after authentication
+        initAuth();
     </script>
