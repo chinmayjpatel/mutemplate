@@ -959,4 +959,11 @@ async def index_html():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("web_api:app", host="0.0.0.0", port=8001, reload=False)
+    uvicorn.run(
+        "web_api:app", 
+        host="0.0.0.0", 
+        port=8001, 
+        reload=False,
+        ssl_keyfile="/etc/letsencrypt/live/dbat.mushhaven.com/privkey.pem",
+        ssl_certfile="/etc/letsencrypt/live/dbat.mushhaven.com/fullchain.pem"
+    )
