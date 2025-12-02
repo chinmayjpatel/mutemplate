@@ -1,0 +1,113 @@
+Folder PATH listing for volume Windows
+Volume serial number is 0AE0-905A
+C:.
+|   .gitignore
+|   game_loader.py
+|   game_schemas.py
+|   grammar.lark
+|   makekey.sh
+|   project_structure.txt
+|   run_game.py
+|   run_portal.py
+|   settings.toml
+|   virtual_map.py
+|   web_api.py
+|   
++---config
+|       default.toml
+|       
++---data
+|   |   .gitkeep
+|   |   
+|   +---attributes
+|   |       health.toml
+|   |       stamina.toml
+|   |       
+|   +---nodes
+|   |       arena_gladiator_pit.toml
+|   |       building_starport.toml
+|   |       city_nova.toml
+|   |       dungeon_darkspire.toml
+|   |       field_nova_outskirts.toml
+|   |       forest_greenveil.toml
+|   |       planet_terra.toml
+|   |       
+|   +---rooms
+|   |       inn_starrest.toml
+|   |       shop_armory.toml
+|   |       shop_basic.toml
+|   |       
+|   \---schemas
+|           node_base.toml
+|           
++---logs
+|       .gitkeep
+|       game.2025-11-03_20-14-12_587504.10.log.zip
+|       game.2025-11-03_20-14-12_587504.11.log.zip
+|       game.2025-11-03_20-14-12_587504.12.log.zip
+|       game.2025-11-03_20-14-12_587504.13.log.zip
+|       game.2025-11-03_20-14-12_587504.14.log.zip
+|       game.2025-11-03_20-14-12_587504.15.log.zip
+|       game.2025-11-03_20-14-12_587504.16.log.zip
+|       game.2025-11-03_20-14-12_587504.17.log.zip
+|       game.2025-11-03_20-14-12_587504.18.log.zip
+|       game.2025-11-03_20-14-12_587504.19.log.zip
+|       game.2025-11-03_20-14-12_587504.2.log.zip
+|       game.2025-11-03_20-14-12_587504.20.log.zip
+|       game.2025-11-03_20-14-12_587504.21.log.zip
+|       game.2025-11-03_20-14-12_587504.22.log.zip
+|       game.2025-11-03_20-14-12_587504.23.log.zip
+|       game.2025-11-03_20-14-12_587504.24.log.zip
+|       game.2025-11-03_20-14-12_587504.25.log.zip
+|       game.2025-11-03_20-14-12_587504.26.log.zip
+|       game.2025-11-03_20-14-12_587504.27.log.zip
+|       game.2025-11-03_20-14-12_587504.28.log.zip
+|       game.2025-11-03_20-14-12_587504.29.log.zip
+|       game.2025-11-03_20-14-12_587504.3.log.zip
+|       game.2025-11-03_20-14-12_587504.30.log.zip
+|       game.2025-11-03_20-14-12_587504.31.log.zip
+|       game.2025-11-03_20-14-12_587504.32.log.zip
+|       game.2025-11-03_20-14-12_587504.33.log.zip
+|       game.2025-11-03_20-14-12_587504.34.log.zip
+|       game.2025-11-03_20-14-12_587504.4.log.zip
+|       game.2025-11-03_20-14-12_587504.5.log.zip
+|       game.2025-11-03_20-14-12_587504.6.log.zip
+|       game.2025-11-03_20-14-12_587504.7.log.zip
+|       game.2025-11-03_20-14-12_587504.8.log.zip
+|       game.2025-11-03_20-14-12_587504.9.log.zip
+|       game.2025-11-03_20-14-12_587504.log.zip
+|       game.log.zip
+|       portal.2025-11-03_20-27-06_694272.2.log.zip
+|       portal.2025-11-03_20-27-06_694272.3.log.zip
+|       portal.2025-11-03_20-27-06_694272.4.log.zip
+|       portal.2025-11-03_20-27-06_694272.5.log.zip
+|       portal.2025-11-03_20-27-06_694272.6.log.zip
+|       portal.2025-11-03_20-27-06_694272.7.log.zip
+|       portal.2025-11-03_20-27-06_694272.8.log.zip
+|       portal.2025-11-03_20-27-06_694272.9.log.zip
+|       portal.2025-11-03_20-27-06_694272.log.zip
+|       portal.log.zip
+|       
++---migrations
+|   +---core
+|   |       001_initial.sql
+|   |       
+|   \---custom
+|           .gitkeep
+|           
++---static
+|   |   index.html
+|   |   
+|   +---css
+|   |       style.css
+|   |       
+|   \---js
+|           game.js
+|           main.js
+|           
+\---__pycache__
+        game_loader.cpython-312.pyc
+        game_schemas.cpython-312.pyc
+        virtual_map.cpython-312.pyc
+        web_api.cpython-312.pyc
+        

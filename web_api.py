@@ -5,8 +5,10 @@ import sys
 import uuid
 import logging
 import random
+import time
 from pathlib import Path
 from typing import Dict, List, Optional, Any
+from collections import defaultdict
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.staticfiles import StaticFiles
@@ -150,6 +152,39 @@ if commands_module and hasattr(commands_module, "execute_command"):
 else:
     execute_command_real = None
 
+def add_chat_message(location_id: str, sender: str, text: str, sender_id: str) -> dict:
+    msg = {
+        "id": len(CHAT_LOG[location_id]) + 1,
+        "ts": time.time(),
+        "from": sender,
+        "sender_id": sender_id,   # ✅ new field
+        "text": text.strip(),
+    }
+    if not msg["text"]:
+        return msg
+
+    CHAT_LOG[location_id].append(msg)
+    if len(CHAT_LOG[location_id]) > MAX_MESSAGES_PER_ROOM:
+        CHAT_LOG[location_id] = CHAT_LOG[location_id][-MAX_MESSAGES_PER_ROOM:]
+    return msg
+
+
+def get_session(session_id: str):
+    """Get session by ID."""
+    if session_id not in sessions:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return sessions[session_id]
+
+
+def get_character_and_location(session_id: str):
+    """Get character and location from session."""
+    session = get_session(session_id)
+    player = session["player"]  # player dict
+    # Use current_node_id as location_id, or fallback to node.id if available
+    location_id = player.get("current_node_id") or session.get("node", {}).get("id", "unknown")
+    return player, location_id
+
+
 def execute_command_simple(command: str, args, player: dict, session: dict) -> dict:
     """
     Handle simple commands from /api/game/command.
@@ -219,29 +254,48 @@ def execute_command_simple(command: str, args, player: dict, session: dict) -> d
     # --- item effects -----------------------------------------------------
     if name == "Medpack":
         heal = 25 * qty
-    elif name == "Nano Repair Kit":
-        heal = 75 * qty
-    elif name == "Energy Cell":
+    elif name in ("Energy Cell", "Charge Cell"):
         heal = 10 * qty
-    elif name == "Charge Cell":
-        heal = 5 * qty
+    elif name == "Nano Repair Kit":
+        # 🔧 Repair the first Plasma Blaster in inventory (uses_left counter)
+        blaster_item = None
+        for it in inventory:
+            n = (it.get("name") or it.get("item") or "").strip().lower()
+            if n == "plasma blaster":
+                blaster_item = it
+                break
 
-    elif name == "Credits":
-        credits_gain = 1 * qty
-    elif name == "Iron Scrap":
-        credits_gain = 2 * qty
-    elif name == "Scrap":
-        credits_gain = 3 * qty
-    elif name == "Scrap Alloy":
-        credits_gain = 5 * qty
+        if blaster_item is None:
+            return {"ok": False, "msg": "You don't have a Plasma Blaster to repair."}
 
-    elif name in ("Weapon", "Plasma Blaster", "Blaster"):
-        # basic weapon vs blaster
-        attack_gain = 10 * qty if name in ("Blaster", "Plasma Blaster") else 5 * qty
+        # reset durability on that blaster
+        blaster_item["uses_left"] = PLASMA_BLASTER_MAX_USES
 
+        # consume the repair kit itself
+        inventory.pop(idx)
+        player["inventory"] = inventory
+        session["player"] = player
+
+        return {
+            "ok": True,
+            "msg": "Your Plasma Blaster is fully repaired.",
+            "player": player,
+        }
+    elif name == "Plasma Blaster":
+        # Overload and destroy the blaster on use
+        inventory.pop(idx)
+        player["inventory"] = inventory
+        session["player"] = player
+        return {
+            "ok": True,
+            "msg": "You overload the Plasma Blaster. It shatters and can no longer be used.",
+            "player": player,
+        }
+    elif name in ("Weapon", "Blaster"):
+        # Regular weapons just boost attack
+        attack_gain = 10 * qty if name == "Blaster" else 5 * qty
     elif name in ("Armor", "Energy Shield"):
         max_hp_gain = 20 * qty
-
     else:
         return {"ok": False, "msg": f"{name} cannot be used directly."}
 
@@ -297,6 +351,39 @@ def execute_command_simple(command: str, args, player: dict, session: dict) -> d
 # ---------- sessions ----------
 sessions: Dict[str, Dict[str, Any]] = {}
 
+# ---------- chat log ----------
+# Simple in-memory chat store: location_id -> list of messages
+CHAT_LOG: Dict[str, List[dict]] = defaultdict(list)
+MAX_MESSAGES_PER_ROOM = 100
+
+# ---------- Plasma Blaster durability ----------
+PLASMA_BLASTER_MAX_USES = 2
+
+def tick_plasma_blaster_uses(player):
+    """
+    Called once per ADVENTURE.
+    Decrements Plasma Blaster uses_left and removes it when it reaches 0.
+    """
+    # Adjust this to however you access inventory on the player object
+    inventory = getattr(player, "inventory", None) or player.get("inventory", [])
+
+    for idx, item in enumerate(inventory):
+        name = item.get("name") or item.get("item")
+        if name != "Plasma Blaster":
+            continue
+
+        uses = item.get("uses_left", PLASMA_BLASTER_MAX_USES)
+        uses -= 1
+
+        if uses <= 0:
+            # Blaster breaks – remove from inventory
+            inventory.pop(idx)
+            # Optional: you can stash a message somewhere if you want
+        else:
+            item["uses_left"] = uses
+
+        break  # only one blaster handled per adventure
+
 # ---------- models ----------
 class CommandRequest(BaseModel):
     session_id: str
@@ -309,6 +396,10 @@ class ShopBuyRequest(BaseModel):
 
 class SearchRequest(BaseModel):
     session_id: str
+
+class ChatSendRequest(BaseModel):
+    session_id: str
+    text: str
 
 @app.on_event("startup")
 async def startup():
@@ -391,6 +482,7 @@ async def start_game():
         "level": 1,
         "credits": 0,
         "inventory": [],
+        "plasma_durability": 0,   # 🔥 add this line
     }
 
     node = {
@@ -427,6 +519,35 @@ async def run_command(req: CommandRequest):
         raise HTTPException(404, "Session not found")
     session = sessions[req.session_id]
     player = session["player"]
+
+    # 🔥 Deposit Scrap / Iron Scrap for credits
+    if req.command == "deposit_scrap":
+        scrap_type = req.args[0] if req.args else None
+        if scrap_type not in ["Scrap", "Iron Scrap"]:
+            return {"ok": False, "msg": "Invalid scrap type."}
+
+        rate = 2 if scrap_type == "Scrap" else 5
+
+        total = sum(
+            (i.get("qty", i.get("count", 0)) or 0)
+            for i in player.get("inventory", [])
+            if (i.get("name") or i.get("item")) == scrap_type
+        )
+
+        # Remove all stacks of that scrap
+        player["inventory"] = [
+            i for i in player.get("inventory", [])
+            if (i.get("name") or i.get("item")) != scrap_type
+        ]
+
+        player["credits"] += total * rate
+        session["player"] = player
+
+        return {
+            "ok": True,
+            "msg": f"Deposited {total} {scrap_type} for {total * rate} credits.",
+            "player": player,
+        }
 
     if execute_command_real:
         result = execute_command_real(
@@ -500,7 +621,10 @@ async def shop_buy(req: ShopBuyRequest):
 
     inv = player.get("inventory") or []
     # normalize to the same shape we use in /state
-    inv.append({"name": name, "qty": 1})
+    if name == "Plasma Blaster":
+        inv.append({"name": name, "qty": 1, "uses_left": PLASMA_BLASTER_MAX_USES})
+    else:
+        inv.append({"name": name, "qty": 1})
     player["inventory"] = inv
 
     session["player"] = player
@@ -511,7 +635,36 @@ async def shop_buy(req: ShopBuyRequest):
         "player": player,
     }
 
-MAX_INVENTORY_SLOTS = 6   # keep in sync with frontend
+SCRAP_STACK_SIZE = 64      # 64 per stack
+MAX_INVENTORY_SLOTS = 6    # keep in sync with frontend
+
+def add_stacked_item(inventory, name, qty):
+    """Stack items like Scrap / Iron Scrap up to 64 per slot."""
+    # Fill existing partial stacks first
+    for item in inventory:
+        if item.get("name") != name:
+            continue
+
+        existing_qty = item.get("qty", item.get("count", 0)) or 0
+        if existing_qty >= SCRAP_STACK_SIZE:
+            continue
+
+        space = SCRAP_STACK_SIZE - existing_qty
+        add_now = min(space, qty)
+        new_qty = existing_qty + add_now
+
+        item["qty"] = new_qty
+        item["count"] = new_qty  # keep both keys in sync
+        qty -= add_now
+
+        if qty <= 0:
+            return
+
+    # Any remaining goes into new stacks
+    while qty > 0:
+        add_now = min(SCRAP_STACK_SIZE, qty)
+        inventory.append({"name": name, "qty": add_now, "count": add_now})
+        qty -= add_now
 
 @app.post("/api/game/search")
 async def search(req: SearchRequest):
@@ -532,9 +685,8 @@ async def search(req: SearchRequest):
             "credits_gained": 0,
         }
 
-    # simple loot table – adjust however you like
+    # 🔥 New loot table – NO Scrap Alloy
     loot_table = [
-        ("Scrap Alloy", 1),
         ("Scrap", 1),
         ("Iron Scrap", 1),
         ("Energy Cell", 1),
@@ -542,20 +694,22 @@ async def search(req: SearchRequest):
         ("Medpack", 1),
     ]
 
-    # 1–2 rolls of random junk
     rolls = random.randint(1, 2)
     found_items = []
     for _ in range(rolls):
         if len(inventory) >= MAX_INVENTORY_SLOTS:
             break
         name, qty = random.choice(loot_table)
-        inventory.append({"name": name, "qty": qty})
+
+        if name in ("Scrap", "Iron Scrap"):
+            add_stacked_item(inventory, name, qty)
+        else:
+            inventory.append({"name": name, "qty": qty})
+
         found_items.append({"name": name, "qty": qty})
 
-    # small credit bonus
     credits_gain = random.randint(5, 25)
-    credits = player.get("credits", 0) + credits_gain
-    player["credits"] = credits
+    player["credits"] = player.get("credits", 0) + credits_gain
 
     player["inventory"] = inventory
     session["player"] = player
@@ -577,7 +731,6 @@ async def start_adventure(session_id: str = Query(...)):
     player = session["player"]
 
     # simple 1–2 raiders
-    import random
     enemy_count = random.randint(1, 2)
     enemies = []
     for i in range(enemy_count):
@@ -590,29 +743,35 @@ async def start_adventure(session_id: str = Query(...)):
             "max_health": max_hp,
             "attack": 8 + level * 2,
             "level": level,
-            "credit_reward": 10 + level * 5,  # Base reward scales with level
+            "credit_reward": 10 + level * 5,
         })
 
     combat = {"enemies": enemies}
     session["combat"] = combat
 
-    # Pre-generate loot for this fight
+    # 🔥 New loot: Credits + Scrap + Iron Scrap
     loot = [
         {"name": "Credits", "count": random.randint(20, 60)},
-        {"name": "Scrap Alloy", "count": random.randint(1, 4)},
+        {"name": "Scrap", "count": random.randint(1, 4)},
+        {"name": "Iron Scrap", "count": random.randint(0, 2)},
     ]
     session["unclaimed_loot"] = loot
+
+    # After resolving combat + loot, tick Plasma Blaster durability
+    tick_plasma_blaster_uses(player)
 
     return {
         "enemies": enemies,
         "description": "You encounter hostile raiders in the outskirts.",
         "loot": loot,
+        "player": player,   # 🔥 so the frontend sees updated durability/inventory
     }
 
 @app.post("/api/game/attack")
 async def attack_enemy(
     session_id: str = Query(...),
     enemy_id: int = Query(...),
+    attack: int = Query(10),   # 🔥 attack value from frontend bar
 ):
     if session_id not in sessions:
         raise HTTPException(status_code=404, detail="Session not found")
@@ -625,7 +784,6 @@ async def attack_enemy(
 
     enemies = combat["enemies"]
 
-    # enemy_id is the enemy's stable "id" field, not its index
     target_index = None
     for i, enemy in enumerate(enemies):
         if enemy.get("id") == enemy_id:
@@ -635,19 +793,16 @@ async def attack_enemy(
     if target_index is None:
         raise HTTPException(status_code=400, detail="Invalid enemy id")
 
-    import random
     events: list[str] = []
 
-    # Player attack
+    # 🔥 Player damage = attack bar, no randomness
+    dmg = attack
     enemy = enemies[target_index]
-    dmg = random.randint(12, 20)
     enemy["health"] = max(0, enemy["health"] - dmg)
     events.append(f"You hit {enemy['name']} for {dmg} damage.")
 
-    # Remove dead enemy and grant rewards
     if enemy["health"] <= 0:
         events.append(f"{enemy['name']} is defeated!")
-        # Grant credit reward
         credit_reward = enemy.get("credit_reward", 0)
         if credit_reward > 0:
             player["credits"] += credit_reward
@@ -657,14 +812,13 @@ async def attack_enemy(
     combat_won = False
     loot_to_send = []
 
-    # Enemy turn (only if any left)
+    # Enemy turn
     if enemies:
         enemy = random.choice(enemies)
-        edmg = random.randint(5, enemy["attack"])
+        edmg = max(4, int(attack * 0.40))   # 🔥 40% of player's attack
         player["health"] = max(0, player["health"] - edmg)
         events.append(f"{enemy['name']} hits you for {edmg} damage.")
-        
-        # Check for player death
+
         if player["health"] <= 0:
             return {
                 "events": events + ["You were defeated!"],
@@ -698,15 +852,18 @@ async def claim_loot(session_id: str = Query(...)):
     if "inventory" not in player or player["inventory"] is None:
         player["inventory"] = []
 
-    # Move loot into inventory
+    inventory = player["inventory"]
+
     for item in loot:
-        if item["name"] == "Credits":
-            player["credits"] += item.get("count", 0)
+        name = item["name"]
+        qty = item.get("qty", item.get("count", 1))
+
+        if name == "Credits":
+            player["credits"] += qty
+        elif name in ("Scrap", "Iron Scrap"):
+            add_stacked_item(inventory, name, qty)
         else:
-            player["inventory"].append({
-                "name": item["name"],
-                "count": item.get("count", 1),
-            })
+            inventory.append({"name": name, "qty": qty})
 
     session["unclaimed_loot"] = []
 
@@ -750,6 +907,33 @@ async def unlock_location(session_id: str = Query(...), location_id: str = Query
         "success": True,
         "message": f"Unlocked {location_id}!",
         "player": player
+    }
+
+@app.post("/api/game/chat/send")
+async def send_chat_message(payload: ChatSendRequest):
+    char, loc_id = get_character_and_location(payload.session_id)
+    msg = add_chat_message(loc_id, char.get("name", "Unknown"), payload.text, payload.session_id)
+
+    # Optional: later you can also push this into the /events stream
+    # for session in loc.contents: session.send_event(...)
+
+    return {
+        "ok": True,
+        "message": msg,
+    }
+
+@app.get("/api/game/chat/messages")
+async def get_chat_messages(session_id: str = Query(...), since: Optional[float] = None):
+    char, loc_id = get_character_and_location(session_id)
+    msgs = CHAT_LOG.get(loc_id, [])
+
+    if since is not None:
+        msgs = [m for m in msgs if m["ts"] > since]
+
+    return {
+        "ok": True,
+        "messages": msgs,
+        "now": time.time(),
     }
 
 

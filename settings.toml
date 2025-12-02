@@ -1,11 +1,7 @@
-[GAME]
-  [GAME.classes]
-    application = "muforge.game.application:Application"
+# Minimal config for new muforge setup
 
-[game]
-node_loader = "muforge.loader:registry"
-command_handler = "muforge.engine:run_player_command"
-state_provider = "muforge.engine:get_player_state"
+[GAME]
+classes = { application = "muforge.game.application:Application" }
+
 [PORTAL]
-  [PORTAL.classes]
-    application = "muforge.portal.application:Application"
+classes = { application = "muforge.portal.application:Application" }

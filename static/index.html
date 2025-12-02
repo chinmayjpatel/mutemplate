@@ -132,6 +132,36 @@
             text-shadow: 0 0 10px black;
             z-index: 2;
         }
+
+        /* Attack bar (derived stat) */
+        .atk-bar-container {
+            width: 220px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid #ff00ff;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .atk-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            transition: width 0.4s ease;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.8);
+        }
+
+        .atk-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 13px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 10px black;
+            z-index: 2;
+        }
             
         .main-content {
             display: grid;
@@ -757,7 +787,24 @@
         .inv-slot.usable .use-indicator {
             display: block;
         }
-        
+
+        .item-uses-bar {
+            position: absolute;
+            top: 2px;
+            left: 4px;
+            right: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .item-uses-fill {
+            height: 100%;
+            background: linear-gradient(to right, #00ff88, #00ffff);
+            width: 100%; /* will be overridden inline */
+        }
+
         @keyframes blink {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.4; }
@@ -860,6 +907,204 @@
             background: rgba(255, 255, 0, 0.05);
             color: #ffff66;
         }
+
+        /* =====================
+           PLAYER CHAT SYSTEM
+           ===================== */
+
+        .toggle-chat-btn {
+            position: fixed;
+            bottom: 120px;
+            right: 25px;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            border: 3px solid #00ffff;
+            background: radial-gradient(ellipse at center, #2a004d 0%, #0b0016 100%);
+            color: #00111a;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 18px rgba(0, 255, 255, 0.8);
+            z-index: 999;
+        }
+
+        .chat-notification {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ff0000;
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .chat-container {
+            position: fixed;
+            bottom: 190px;
+            right: 25px;
+            width: 340px;
+            height: 380px;
+            background: rgba(10, 0, 30, 0.92);
+            border: 3px solid #00ffff;
+            border-radius: 15px;
+            display: none;
+            flex-direction: column;
+            z-index: 998;
+        }
+
+        .chat-header {
+            padding: 12px;
+            border-bottom: 2px solid #00ffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #00ffff;
+            font-size: 14px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 13px;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-message.own {
+            justify-content: flex-end;
+        }
+
+        .chat-bubble {
+            padding: 8px 12px;
+            border-radius: 10px;
+            max-width: 75%;
+        }
+
+        .chat-message.own .chat-bubble {
+            background: rgba(0, 255, 255, 0.25);
+            border: 1px solid #00ffff;
+        }
+
+        .chat-message.other .chat-bubble {
+            background: rgba(255, 0, 255, 0.25);
+            border: 1px solid #ff00ff;
+        }
+
+        .chat-bubble.chat-own {
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+        }
+
+        .chat-sender {
+            font-weight: 600;
+            margin-right: 4px;
+        }
+
+        .chat-message.own .chat-sender {
+            color: #00ffff;
+        }
+
+        .chat-message.other .chat-sender {
+            color: #ff00ff;
+        }
+
+        .chat-input-row {
+            padding: 10px;
+            border-top: 2px solid #00ffff;
+            display: flex;
+            gap: 8px;
+        }
+
+        #chatInput {
+            flex: 1;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            border-radius: 8px;
+            resize: none;
+        }
+
+        /* Plasma Blaster repair modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1500;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-dialog {
+            background: linear-gradient(135deg, #140022, #240034);
+            border: 2px solid #00ffff;
+            border-radius: 14px;
+            width: 420px;
+            max-width: 90%;
+            padding: 20px 24px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            color: #00ffff;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .modal-body {
+            color: #ccc;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: none;
+            font-family: inherit;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .modal-btn-primary {
+            background: linear-gradient(135deg, #00ffff, #00aa88);
+            color: #000;
+        }
+
+        .modal-btn-secondary {
+            background: transparent;
+            border: 1px solid #888;
+            color: #ddd;
+        }
     </style>
 </head>
 <body>
@@ -881,6 +1126,16 @@
                     <div class="stat-label">Credits</div>
                     <div class="stat-value" id="credits">0</div>
                 </div>
+
+                <!-- 🔥 NEW: Attack bar -->
+                <div class="stat">
+                    <div class="stat-label">Attack</div>
+                    <div class="atk-bar-container">
+                        <div class="atk-bar-fill" id="atkBar" style="width: 30%"></div>
+                        <div class="atk-text" id="atkText">10</div>
+                    </div>
+                </div>
+
                 <div class="stat">
                     <div class="stat-label">Location</div>
                     <div class="stat-value" id="currentLocation">Terra</div>
@@ -943,6 +1198,48 @@
         <div class="tooltip-action" id="tooltipAction"></div>
     </div>
     
+    <!-- PLAYER CHAT UI -->
+    <button class="toggle-chat-btn" onclick="togglePlayerChat()">
+        💬
+        <div class="chat-notification" id="chatNotification">0</div>
+    </button>
+
+    <div class="chat-container" id="chatContainer">
+        <div class="chat-header">
+            <div>PLAYER CHAT</div>
+            <button onclick="togglePlayerChat()" style="background:none;border:none;color:#ff00ff;font-size:20px;cursor:pointer;">✕</button>
+        </div>
+
+        <div class="chat-messages" id="chatMessages"></div>
+
+        <div class="chat-input-row">
+            <textarea id="chatInput" placeholder="Type message..."></textarea>
+            <button class="chat-send-btn" onclick="sendChat()" style="padding:8px 12px;border:none;background:#00ffff;color:#000;border-radius:8px;cursor:pointer;">SEND</button>
+        </div>
+    </div>
+
+    <!-- Plasma Blaster repair choice modal -->
+    <div class="modal-overlay" id="blasterModal">
+        <div class="modal-dialog">
+            <div class="modal-title">Plasma Blaster Damage</div>
+            <div class="modal-body">
+                Your Plasma Blaster is about to break on this adventure.<br><br>
+                Use a <strong>Nano Repair Kit</strong> to fully repair it,
+                or continue and let it break after this run.
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-secondary"
+                        onclick="skipBlasterRepairAndAdventure()">
+                    Let it break
+                </button>
+                <button class="modal-btn modal-btn-primary"
+                        onclick="confirmBlasterRepairAndAdventure()">
+                    Use Repair Kit
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <script>
         // =====================
         // CONFIG + GLOBAL STATE
@@ -954,6 +1251,7 @@
         const HOME_PLANET_POS = { x: 3, y: 3 };
         const SHOP_PLANET_POS = { x: 5, y: 2 };
         const SHOP_COST_REQUIREMENT = 50;
+        const BASE_ATTACK_POWER = 10;
         const EXPLORATION_PLANETS = [
             { x: 1, y: 1, name: "Alpha Station" },
             { x: 5, y: 5, name: "Beta Outpost" },
@@ -996,26 +1294,26 @@
                 icon: '📩',
                 type: 'material',
                 effect: null,
-                desc: 'Crafting material. Cannot be used directly.'
+                desc: 'Stackable up to 64. Can be deposited in shop for 2 credits each.'
             },
             'Iron Scrap': {
                 icon: '📩',
                 type: 'material',
                 effect: null,
-                desc: 'Crafting material. Cannot be used directly.'
+                desc: 'Stackable up to 64. Can be deposited in shop for 5 credits each.'
             },
             'Scrap Alloy': {
                 icon: '📩',
                 type: 'material',
                 effect: null,
-                desc: 'Crafting material. Cannot be used directly.'
+                desc: 'Deprecated material – not currently used.'
             },
             'Plasma Blaster': {
                 icon: '🔫',
                 type: 'weapon',
                 effect: 'equip',
                 value: 25,
-                desc: 'Equip to increase attack damage by 25'
+                desc: 'Single-use weapon: while in your inventory, attack +25. Using it destroys the blaster.'
             },
             'Blaster': {
                 icon: '🔫',
@@ -1264,6 +1562,50 @@
                 `;
                 c.appendChild(d);
             });
+
+            // 🔥 Scrap deposit panels
+            const items = gameState.player?.inventory || [];
+
+            function totalOf(name) {
+                return items
+                    .filter(it => (it.name || it.item) === name)
+                    .reduce((sum, it) => sum + (it.qty ?? it.count ?? it.amount ?? 1), 0);
+            }
+
+            const scrapCount = totalOf('Scrap');
+            const ironScrapCount = totalOf('Iron Scrap');
+
+            // Deposit Scrap (2 credits each)
+            const scrapDiv = document.createElement('div');
+            scrapDiv.className = 'shop-item';
+            scrapDiv.innerHTML = `
+                <div class="shop-item-icon">📩</div>
+                <div class="shop-item-name">Deposit Scrap</div>
+                <div class="shop-item-desc">
+                    Trade Scrap for credits. You currently have <strong>${scrapCount}</strong> Scrap.
+                </div>
+                <div class="shop-item-price">2 Credits per Scrap</div>
+                <button class="buy-btn" ${scrapCount === 0 ? 'disabled' : ''} onclick="depositScrap('Scrap')">
+                    ${scrapCount === 0 ? 'NO SCRAP TO DEPOSIT' : 'DEPOSIT ALL SCRAP'}
+                </button>
+            `;
+            c.appendChild(scrapDiv);
+
+            // Deposit Iron Scrap (5 credits each)
+            const ironDiv = document.createElement('div');
+            ironDiv.className = 'shop-item';
+            ironDiv.innerHTML = `
+                <div class="shop-item-icon">📩</div>
+                <div class="shop-item-name">Deposit Iron Scrap</div>
+                <div class="shop-item-desc">
+                    Trade Iron Scrap for credits. You currently have <strong>${ironScrapCount}</strong> Iron Scrap.
+                </div>
+                <div class="shop-item-price">5 Credits per Iron Scrap</div>
+                <button class="buy-btn" ${ironScrapCount === 0 ? 'disabled' : ''} onclick="depositScrap('Iron Scrap')">
+                    ${ironScrapCount === 0 ? 'NO IRON SCRAP TO DEPOSIT' : 'DEPOSIT ALL IRON SCRAP'}
+                </button>
+            `;
+            c.appendChild(ironDiv);
         }
 
         async function buyItem(itemName, price) {
@@ -1298,6 +1640,36 @@
             }
         }
 
+        async function depositScrap(scrapType) {
+            try {
+                const res = await fetch(`${API_URL}/game/command`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        session_id: sessionId,
+                        command: "deposit_scrap",
+                        args: [scrapType]
+                    })
+                });
+
+                const data = await res.json();
+                if (!data.ok) {
+                    addMessage(data.error || data.msg || `Failed to deposit ${scrapType}.`, 'error');
+                    return;
+                }
+
+                const p = data.player;
+                gameState.player.credits = p.credits;
+                gameState.player.inventory = p.inventory || [];
+                addMessage(data.msg || `You trade your ${scrapType} for credits.`, 'success');
+                updateUI();
+                renderShop();
+            } catch (err) {
+                console.error("depositScrap error:", err);
+                addMessage("Error depositing scrap: " + err.message, "error");
+            }
+        }
+
         function exitShop() {
             showView('location');
         }
@@ -1315,6 +1687,7 @@
             document.getElementById('locationName').textContent = currentLocation.name.toUpperCase();
             document.getElementById('locationDesc').textContent = currentLocation.desc;
             renderInventory();
+            updateAttackBar();   // 🔥 NEW
         }
 
         function renderInventory() {
@@ -1339,7 +1712,24 @@
                     }
 
                     const icon = itemData?.icon || '📦';
+                    
+                    const isPlasma = name === "Plasma Blaster";
+                    // Use the same constant as backend: 2 uses
+                    const maxUses = 2;
+                    const usesLeft = isPlasma
+                        ? (rawItem.uses_left ?? maxUses)
+                        : null;
+
+                    const durabilityBar = isPlasma
+                        ? `
+                          <div class="item-uses-bar">
+                            <div class="item-uses-fill" style="width: ${(usesLeft / maxUses) * 100}%"></div>
+                          </div>
+                          `
+                        : "";
+
                     slot.innerHTML = `
+                        ${durabilityBar}
                         <div class="use-indicator">USE</div>
                         <div class="inv-slot-icon">${icon}</div>
                         <div class="inv-slot-count">×${qty}</div>
@@ -1358,6 +1748,33 @@
                 }
                 grid.appendChild(slot);
             }
+        }
+
+        function computeAttackPower() {
+            const items = gameState.player?.inventory || [];
+            let attack = BASE_ATTACK_POWER;
+
+            for (const raw of items) {
+                const name = raw.name || raw.item || raw;  // supports different payload shapes
+                const itemData = ITEM_DATABASE[name];
+                if (itemData && itemData.type === 'weapon' && itemData.effect === 'equip') {
+                    attack += itemData.value || 0;
+                }
+            }
+            return attack;
+        }
+
+        function updateAttackBar() {
+            const atkEl = document.getElementById('atkBar');
+            const textEl = document.getElementById('atkText');
+            if (!atkEl || !textEl) return;
+
+            const attack = computeAttackPower();
+            textEl.textContent = attack;
+
+            // Simple width scaling: 0–100%
+            const widthPercent = Math.max(10, Math.min(100, attack));
+            atkEl.style.width = widthPercent + '%';
         }
 
         function showTooltip(event, itemName) {
@@ -1417,7 +1834,15 @@
                 }
 
                 // Backend applied the effect and updated inventory
-                addMessage(data.msg || `Used ${itemName}.`, 'use');
+                if (itemName === "Plasma Blaster") {
+                    // Custom UI message for blaster use
+                    addMessage(
+                        "You overload the Plasma Blaster! It shatters and can no longer be used.",
+                        "use"
+                    );
+                } else {
+                    addMessage(data.msg || `Used ${itemName}.`, "use");
+                }
 
                 // Reload true state from server so HP/credits/inventory are accurate
                 await loadGameState();
@@ -1445,15 +1870,95 @@
                 addMessage('Cannot start adventure in shop!', 'error');
                 return;
             }
+
+            // Check Plasma Blaster durability + Nano Repair Kit
+            const inv = gameState.player?.inventory || [];
+            let blasterItem = null;
+            let repairIndex = -1;
+
+            inv.forEach((it, idx) => {
+                const n = (it.name || it.item || "").trim();
+                if (n === "Plasma Blaster" && !blasterItem) {
+                    blasterItem = it;
+                }
+                if (n === "Nano Repair Kit" && repairIndex === -1) {
+                    repairIndex = idx;
+                }
+            });
+
+            if (blasterItem) {
+                const maxUses = 2; // keep in sync with backend
+                const usesLeft = blasterItem.uses_left ?? maxUses;
+
+                // If this run will break it and a repair kit exists, show modal instead of browser confirm
+                if (usesLeft === 1 && repairIndex !== -1) {
+                    pendingBlasterDecision = { repairIndex };
+                    openBlasterModal();
+                    return; // wait for user choice
+                }
+            }
+
+            // Normal path: just go on the adventure
+            await startAdventureCore();
+        }
+
+        async function startAdventureCore() {
             addMessage('⚔ You venture into danger...', 'combat');
+
             const res = await fetch(`${API_URL}/game/adventure?session_id=${sessionId}`, {
                 method: "POST"
             });
             const data = await res.json();
+
+            // Updated player state from backend (HP, credits, inventory, durability)
+            if (data.player) {
+                const p = data.player;
+                gameState.player.health = p.health;
+                gameState.player.maxHealth = p.max_health;
+                gameState.player.credits = p.credits;
+                gameState.player.inventory = p.inventory || [];
+            }
+
             gameState.combat = { enemies: data.enemies || [] };
             gameState.loot = data.loot ? { items: data.loot } : null;
+
+            updateUI();          // includes attack bar + blaster uses bar
+            renderGalaxyMap();
+
             showView('combat');
             renderCombat();
+        }
+
+        function openBlasterModal() {
+            const el = document.getElementById('blasterModal');
+            if (el) el.classList.add('active');
+        }
+
+        function closeBlasterModal() {
+            const el = document.getElementById('blasterModal');
+            if (el) el.classList.remove('active');
+        }
+
+        async function confirmBlasterRepairAndAdventure() {
+            if (!pendingBlasterDecision) {
+                closeBlasterModal();
+                return;
+            }
+
+            const { repairIndex } = pendingBlasterDecision;
+            pendingBlasterDecision = null;
+
+            // This will reload gameState from the backend
+            await useInventoryItem("Nano Repair Kit", repairIndex);
+
+            closeBlasterModal();
+            await startAdventureCore();
+        }
+
+        function skipBlasterRepairAndAdventure() {
+            pendingBlasterDecision = null;
+            closeBlasterModal();
+            startAdventureCore(); // fire and forget is fine here
         }
 
         function renderCombat() {
@@ -1482,8 +1987,13 @@
         }
 
         async function attackEnemy(enemyId) {
+            // Use current Attack stat as flat damage
+            const attackPower = typeof computeAttackPower === "function"
+                ? computeAttackPower()
+                : BASE_ATTACK_POWER;
+
             const res = await fetch(
-                `${API_URL}/game/attack?session_id=${sessionId}&enemy_id=${enemyId}`,
+                `${API_URL}/game/attack?session_id=${sessionId}&enemy_id=${enemyId}&attack=${attackPower}`,
                 { method: "POST" }
             );
             const data = await res.json();
@@ -1648,6 +2158,99 @@
             addMessage(data.message || 'You feel a bit better.', 'system');
             updateUI();
         }
+
+        // =====================
+        // PLAYER CHAT SYSTEM
+        // =====================
+        let chatOpen = false;
+        let unreadMessages = 0;
+        let chatHistory = [];
+        let lastChatTs = 0;
+        let pendingBlasterDecision = null;
+
+        function togglePlayerChat() {
+            const box = document.getElementById('chatContainer');
+            const notif = document.getElementById('chatNotification');
+
+            chatOpen = !chatOpen;
+            box.style.display = chatOpen ? 'flex' : 'none';
+
+            if (chatOpen) {
+                unreadMessages = 0;
+                notif.style.display = 'none';
+            }
+        }
+
+        function displayChatMessage(sender, text, isOwn) {
+            const container = document.getElementById('chatMessages');
+            const el = document.createElement('div');
+            el.className = 'chat-message ' + (isOwn ? 'own' : 'other');
+
+            const bubble = document.createElement('div');
+            bubble.className = 'chat-bubble' + (isOwn ? ' chat-own' : '');
+
+            const name = isOwn ? 'You' : (sender || 'Player');
+            bubble.innerHTML = `<span class="chat-sender">${name}:</span> ${text}`;
+
+            el.appendChild(bubble);
+            container.appendChild(el);
+            container.scrollTop = container.scrollHeight;
+
+            // also mirror to bottom log if you want
+            addMessage(`Chat – ${name}: ${text}`);
+
+            if (!isOwn && !chatOpen) {
+                unreadMessages++;
+                const notif = document.getElementById('chatNotification');
+                notif.textContent = unreadMessages;
+                notif.style.display = 'flex';
+            }
+        }
+
+        async function sendChat() {
+            const chatInput = document.getElementById('chatInput');
+            const text = chatInput.value.trim();
+            if (!text || !sessionId) return;
+
+            chatInput.value = '';
+
+            const res = await fetch(`${API_URL}/game/chat/send`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ session_id: sessionId, text }),
+            });
+        }
+
+        async function pollChat() {
+            if (!sessionId) return;
+            const params = new URLSearchParams({ session_id: sessionId });
+            if (lastChatTs) params.set("since", String(lastChatTs));
+
+            const res = await fetch(`${API_URL}/game/chat/messages?` + params.toString());
+            if (!res.ok) return;
+            const data = await res.json();
+            if (!data.ok) return;
+
+            const messages = data.messages || [];
+            if (messages.length > 0) {
+                lastChatTs = data.now || lastChatTs;
+                
+                for (const msg of messages) {
+                    const isOwn = (msg.sender_id === sessionId);  // ✅ compare IDs, not names
+                    displayChatMessage(msg.from, msg.text, isOwn);
+                }
+            }
+        }
+
+        setInterval(pollChat, 1500);
+
+        // Enter key to send
+        document.addEventListener("keydown", (e) => {
+            if (e.target.id === "chatInput" && e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendChat();
+            }
+        });
 
         // =====================
         // START
